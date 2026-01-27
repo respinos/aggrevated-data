@@ -64,16 +64,10 @@ public class PossibleObject {
     public Long totalSize() {
         var totalSize = size;
         if (childObjects != null) {
-            System.err.println(":: " + identifier + " -> " + childObjects.size());
             for (PossibleObject child : childObjects) {
                 totalSize += child.totalSize();
             }
-        } else {
-            System.err.println("!! " + identifier + " -> " + childCount);
         }
         return totalSize;
     }
-
-//    public List<ObjectFile> getObjectFiles() { return objectFiles; }
-//    public void setObjectFiles(List<ObjectFile> objectFiles) { this.objectFiles = objectFiles; }
 }

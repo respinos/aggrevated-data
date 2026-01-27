@@ -27,7 +27,7 @@ public interface PossibleObjectMapper {
     })
     PossibleObject findByIdWithObjectFiles(Long id);
 
-    @Select("SELECT possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = possible_objects.id ) AS size FROM possible_objects LIMIT #{limit} OFFSET #{offset}")
+    @Select("SELECT possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = possible_objects.id ) AS size FROM current_possible_objects LIMIT #{limit} OFFSET #{offset}")
     List<PossibleObject> findAll(Integer limit, Integer offset);
 
     @Select("SELECT possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = possible_objects.id ) AS size FROM possible_objects WHERE parent_id IS NULL LIMIT #{limit} OFFSET #{offset}")
@@ -41,7 +41,10 @@ public interface PossibleObjectMapper {
             @Result(property = "childObjects", column = "id",
                     many = @Many(select = "findChildrenByParentId", fetchType = FetchType.LAZY))
     })
-    List<PossibleObject> findAllRoots(Integer limit, Integer offset);
+    List<PossibleObject> findAllCurrentRoots(Integer limit, Integer offset);
+
+    @Select("SELECT COUNT(id) FROM current_possible_objects")
+    Long countCurrentRoots();
 
     @Select("SELECT COUNT(possible_objects.id) FROM possible_objects WHERE parent_id = #{id}")
     Long countChildrenByParentId(int id);

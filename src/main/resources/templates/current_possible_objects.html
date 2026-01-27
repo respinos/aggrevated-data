@@ -35,14 +35,14 @@
     </tr>
     </tbody>
 </table>
-<!--<nav>-->
-<!--    <span th:if="${page.hasPrevious()}">-->
-<!--        <a th:href="@{'/current-possible-objects'(page=${page.number - 1},size=${page.size})}">Previous</a>-->
-<!--    </span>-->
-<!--    <span>Page <span th:text="${page.number + 1}"></span> of <span th:text="${page.totalPages}"></span></span>-->
-<!--    <span th:if="${page.hasNext()}">-->
-<!--        <a th:href="@{'/current-possible-objects'(page=${page.number + 1},size=${page.size})}">Next</a>-->
-<!--    </span>-->
-<!--</nav>-->
+<nav>
+    <span th:if="${page.hasPrevious()}">
+        <a th:href="@{/console/objects/(page=${page.page - 1})}">Previous</a>
+    </span>
+    <span>Page <span th:text="${page.page + 1}"></span> of <span th:text="${page.totalPages}"></span></span>
+    <span th:if="${page.hasNext()}">
+        <a th:href="@{/console/objects/(page=${page.page + 1})}">Next</a>
+    </span>
+</nav>
 </body>
 </html>
