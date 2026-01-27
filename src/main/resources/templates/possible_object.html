@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Possible Object Details</title>
+    <style>
+        table, th, td { border: 1px solid black; border-collapse: collapse; }
+        th, td { padding: 4px 8px; }
+    </style>
+</head>
+<body>
+<h1>Possible Object Details</h1>
+<div th:if="${possibleObject != null}">
+    <table>
+        <tr><th>ID</th><td th:text="${possibleObject.id}"></td></tr>
+        <tr><th>Parent ID</th><td th:text="${possibleObject.parentId}"></td></tr>
+        <tr><th>Identifier</th><td th:text="${possibleObject.identifier}"></td></tr>
+        <tr><th>Type</th><td th:text="${possibleObject.type}"></td></tr>
+        <tr><th>Version Number</th><td th:text="${possibleObject.versionNumber}"></td></tr>
+        <tr><th>Bin Identifier</th><td th:text="${possibleObject.binIdentifier}"></td></tr>
+        <tr><th>Size</th><td th:text="${possibleObjectFileSize}"></td></tr>
+    </table>
+</div>
+<div th:if="${possibleObject == null}">
+    <p>No PossibleObject found for the given ID.</p>
+</div>
+<div th:if="${childPossibleObjects != null and #lists.size(childPossibleObjects) > 0}">
+    <h2>Child Possible Objects</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Parent ID</th>
+            <th>Identifier</th>
+            <th>Type</th>
+            <th>Version Number</th>
+            <th>Bin Identifier</th>
+            <th>Size</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="obj : ${childPossibleObjects}">
+            <td th:text="${obj.id}"></td>
+            <td th:text="${obj.parentId}"></td>
+            <td th:text="${obj.identifier}"></td>
+            <td th:text="${obj.type}"></td>
+            <td th:text="${obj.versionNumber}"></td>
+            <td th:text="${obj.binIdentifier}"></td>
+            <td th:text="${childObjectFileSizes[obj.id]}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

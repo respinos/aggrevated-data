@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Import</title>
+    <style>
+        table, th, td { border: 1px solid black; border-collapse: collapse; }
+        th, td { padding: 4px 8px; }
+        nav { margin-top: 1em; }
+    </style>
+</head>
+<body>
+<h1>Import</h1>
+<pre th:text="${message}"></pre>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Parent ID</th>
+        <th>Identifier</th>
+        <th>Type</th>
+        <th>Version Number</th>
+        <th>Bin Identifier</th>
+        <th>Object File Size</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="obj : ${possibleObjects}">
+        <td><a th:href="@{'/possible-object'(id=${obj.id})}" th:text="${obj.id}"></a></td>
+        <td th:text="${obj.parentId}"></td>
+        <td th:text="${obj.identifier}"></td>
+        <td th:text="${obj.type}"></td>
+        <td th:text="${obj.versionNumber}"></td>
+        <td th:text="${obj.binIdentifier}"></td>
+        <td th:text="${obj.size}"></td>
+<!--        <td th:text="${objectFileSizes[obj.id]}"></td>-->
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

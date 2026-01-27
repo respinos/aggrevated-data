@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Current Possible Objects</title>
+    <style>
+        table, th, td { border: 1px solid black; border-collapse: collapse; }
+        th, td { padding: 4px 8px; }
+        nav { margin-top: 1em; }
+    </style>
+</head>
+<body>
+<h1>Current Possible Objects</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Parent ID</th>
+        <th>Identifier</th>
+        <th>Type</th>
+        <th>Version Number</th>
+        <th>Bin Identifier</th>
+        <th>Object File Size</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="obj : ${rootObjects}">
+        <td><a th:href="@{'/possible-object'(id=${obj.id})}" th:text="${obj.id}"></a></td>
+        <td th:text="${obj.parentId}"></td>
+        <td th:text="${obj.identifier}"></td>
+        <td th:text="${obj.type}"></td>
+        <td th:text="${obj.versionNumber}"></td>
+        <td th:text="${obj.binIdentifier}"></td>
+        <td th:text="${obj.size}"></td>
+    </tr>
+    </tbody>
+</table>
+<!--<nav>-->
+<!--    <span th:if="${page.hasPrevious()}">-->
+<!--        <a th:href="@{'/current-possible-objects'(page=${page.number - 1},size=${page.size})}">Previous</a>-->
+<!--    </span>-->
+<!--    <span>Page <span th:text="${page.number + 1}"></span> of <span th:text="${page.totalPages}"></span></span>-->
+<!--    <span th:if="${page.hasNext()}">-->
+<!--        <a th:href="@{'/current-possible-objects'(page=${page.number + 1},size=${page.size})}">Next</a>-->
+<!--    </span>-->
+<!--</nav>-->
+</body>
+</html>
