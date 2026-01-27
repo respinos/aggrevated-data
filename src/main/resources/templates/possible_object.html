@@ -65,7 +65,7 @@
         </thead>
         <tbody>
         <tr th:each="obj : ${possibleObject.childObjects}">
-            <td th:text="${obj.id}"></td>
+            <td><a th:href="@{/console/objects/{id}/(id=${obj.id})}" th:text="${obj.id}"></a></td>
             <td th:text="${obj.parentId}"></td>
             <td th:text="${obj.identifier}"></td>
             <td th:text="${obj.type}"></td>
