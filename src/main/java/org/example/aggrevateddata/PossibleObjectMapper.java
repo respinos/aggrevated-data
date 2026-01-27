@@ -27,10 +27,26 @@ public interface PossibleObjectMapper {
     })
     PossibleObject findByIdWithObjectFiles(Long id);
 
-    @Select("SELECT possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = possible_objects.id ) AS size FROM current_possible_objects LIMIT #{limit} OFFSET #{offset}")
+    @Select("SELECT * FROM current_possible_objects WHERE identifier = #{identifier}")
+    @Results({
+            @Result(property = "id", column = "id", id = true),
+            // Lazy load the SIZE (Count)
+            @Result(property = "childCount", column = "id",
+                    one = @One(select = "countChildrenByParentId", fetchType = FetchType.LAZY)),
+
+            // Lazy load the ROWS (List)
+            @Result(property = "childObjects", column = "id",
+                    many = @Many(select = "findChildrenByParentId", fetchType = FetchType.LAZY)),
+
+            @Result(property = "objectFiles", column = "id",
+                    many = @Many(select = "org.example.aggrevateddata.ObjectFileMapper.findByPossibleObjectsKey", fetchType = FetchType.LAZY))
+    })
+    PossibleObject findCurrentByIdentifier(String identifier);
+
+    @Select("SELECT current_possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = current_possible_objects.id ) AS size FROM current_possible_objects LIMIT #{limit} OFFSET #{offset}")
     List<PossibleObject> findAll(Integer limit, Integer offset);
 
-    @Select("SELECT possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = possible_objects.id ) AS size FROM possible_objects WHERE parent_id IS NULL LIMIT #{limit} OFFSET #{offset}")
+    @Select("SELECT current_possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = current_possible_objects.id ) AS size FROM current_possible_objects WHERE parent_id IS NULL LIMIT #{limit} OFFSET #{offset}")
     @Results({
             @Result(property = "id", column = "id", id = true),
             // Lazy load the SIZE (Count)
