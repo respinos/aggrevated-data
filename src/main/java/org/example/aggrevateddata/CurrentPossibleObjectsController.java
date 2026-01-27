@@ -19,20 +19,20 @@ public class CurrentPossibleObjectsController {
         this.possibleObjectMapper = possibleObjectMapper;
     }
 
-    @GetMapping("/current")
+    @GetMapping("/console/objects/")
     public String listCurrentPossibleObjects(Model model,
                                              @RequestParam(defaultValue = "0") int page,
                                              @RequestParam(defaultValue = "20") int size) {
 
         List<PossibleObject> rootObjects = StreamSupport.stream(possibleObjectMapper.findAllRoots(size, page).spliterator(), false).collect(Collectors.toList());
-        for(PossibleObject obj : rootObjects) {
-            var objSize = obj.getSize();
-            var childObjects = possibleObjectMapper.findChildren(obj.getId());
-            for(PossibleObject child : childObjects) {
-                objSize += child.getSize();
-            }
-            obj.setSize(objSize);
-        }
+//        for(PossibleObject obj : rootObjects) {
+//            var objSize = obj.getSize();
+//            var childObjects = possibleObjectMapper.findChildrenByParentId(obj.getId());
+//            for(PossibleObject child : childObjects) {
+//                objSize += child.getSize();
+//            }
+//            obj.setSize(objSize);
+//        }
         model.addAttribute("rootObjects", rootObjects);
         return "current_possible_objects";
     }

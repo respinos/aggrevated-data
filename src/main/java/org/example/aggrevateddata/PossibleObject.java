@@ -12,6 +12,12 @@ public class PossibleObject {
     private String binIdentifier;
     private Long size = 0L;
 
+    // Triggered by getChildCount()
+    private Long childCount = 0L;
+
+    // Triggered by getChildObjects()
+    private List<PossibleObject> childObjects;
+
     public PossibleObject() {}
 
     public PossibleObject(Integer id, Integer parentId, String identifier, String type, Integer versionNumber, String binIdentifier) {
@@ -43,6 +49,25 @@ public class PossibleObject {
 
     public Long getSize() { return size; }
     public void setSize(Long size) { this.size = size; }
+
+    public Long getChildCount() { return childCount; }
+    public void setChildCount(Long childCount) { this.childCount = childCount; }
+
+    public List<PossibleObject> getChildObjects() { return childObjects; }
+    public void setChildObjects(List<PossibleObject> childObjects) { this.childObjects = childObjects; }
+
+    public Long totalSize() {
+        var totalSize = size;
+        if (childObjects != null) {
+            System.err.println(":: " + identifier + " -> " + childObjects.size());
+            for (PossibleObject child : childObjects) {
+                totalSize += child.totalSize();
+            }
+        } else {
+            System.err.println("!! " + identifier + " -> " + childCount);
+        }
+        return totalSize;
+    }
 
 //    public List<ObjectFile> getObjectFiles() { return objectFiles; }
 //    public void setObjectFiles(List<ObjectFile> objectFiles) { this.objectFiles = objectFiles; }

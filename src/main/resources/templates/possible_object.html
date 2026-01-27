@@ -18,13 +18,13 @@
         <tr><th>Type</th><td th:text="${possibleObject.type}"></td></tr>
         <tr><th>Version Number</th><td th:text="${possibleObject.versionNumber}"></td></tr>
         <tr><th>Bin Identifier</th><td th:text="${possibleObject.binIdentifier}"></td></tr>
-        <tr><th>Size</th><td th:text="${possibleObjectFileSize}"></td></tr>
+        <tr><th>Size</th><td th:text="${possibleObject.size}"></td></tr>
     </table>
 </div>
 <div th:if="${possibleObject == null}">
     <p>No PossibleObject found for the given ID.</p>
 </div>
-<div th:if="${childPossibleObjects != null and #lists.size(childPossibleObjects) > 0}">
+<div th:if="${possibleObject.childCount > 0}">
     <h2>Child Possible Objects</h2>
     <table>
         <thead>
@@ -39,14 +39,14 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="obj : ${childPossibleObjects}">
+        <tr th:each="obj : ${possibleObject.childObjects}">
             <td th:text="${obj.id}"></td>
             <td th:text="${obj.parentId}"></td>
             <td th:text="${obj.identifier}"></td>
             <td th:text="${obj.type}"></td>
             <td th:text="${obj.versionNumber}"></td>
             <td th:text="${obj.binIdentifier}"></td>
-            <td th:text="${childObjectFileSizes[obj.id]}"></td>
+            <td th:text="${obj.totalSize}"></td>
         </tr>
         </tbody>
     </table>

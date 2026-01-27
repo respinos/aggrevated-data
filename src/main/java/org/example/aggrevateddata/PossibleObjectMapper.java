@@ -1,7 +1,7 @@
 package org.example.aggrevateddata;
 
 import org.apache.ibatis.annotations.*;
-import org.example.aggrevateddata.PossibleObject;
+import org.apache.ibatis.mapping.FetchType;
 
 import java.util.List;
 
@@ -14,19 +14,50 @@ public interface PossibleObjectMapper {
     @Select("SELECT * FROM possible_objects WHERE id = #{id}")
     @Results({
             @Result(property = "id", column = "id", id = true),
-            @Result(property = "objectFiles", column = "id",
+            // Lazy load the SIZE (Count)
+            @Result(property = "childCount", column = "id",
+                    one = @One(select = "countChildrenByParentId", fetchType = FetchType.LAZY)),
+
+            // Lazy load the ROWS (List)
+            @Result(property = "childObjects", column = "id",
+                    many = @Many(select = "findChildrenByParentId", fetchType = FetchType.LAZY)),
+
+            @Result(property = "objectFiles", column = "possible_objects_key",
                     many = @Many(select = "com.example.aggregavateddata.ObjectFileMapper.findByPossibleObjectsKey"))
     })
-    PossibleObject findByIdWithObjectFiles(int id);
+    PossibleObject findByIdWithObjectFiles(Long id);
 
     @Select("SELECT possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = possible_objects.id ) AS size FROM possible_objects LIMIT #{limit} OFFSET #{offset}")
     List<PossibleObject> findAll(Integer limit, Integer offset);
 
     @Select("SELECT possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = possible_objects.id ) AS size FROM possible_objects WHERE parent_id IS NULL LIMIT #{limit} OFFSET #{offset}")
+    @Results({
+            @Result(property = "id", column = "id", id = true),
+            // Lazy load the SIZE (Count)
+            @Result(property = "childCount", column = "id",
+                    one = @One(select = "countChildrenByParentId", fetchType = FetchType.LAZY)),
+
+            // Lazy load the ROWS (List)
+            @Result(property = "childObjects", column = "id",
+                    many = @Many(select = "findChildrenByParentId", fetchType = FetchType.LAZY))
+    })
     List<PossibleObject> findAllRoots(Integer limit, Integer offset);
 
+    @Select("SELECT COUNT(possible_objects.id) FROM possible_objects WHERE parent_id = #{id}")
+    Long countChildrenByParentId(int id);
+
     @Select("SELECT possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = possible_objects.id ) AS size FROM possible_objects WHERE parent_id = #{id}")
-    List<PossibleObject> findChildren(int id);
+    @Results({
+            @Result(property = "id", column = "id", id = true),
+            // Lazy load the SIZE (Count) - recursive
+            @Result(property = "childCount", column = "id",
+                    one = @One(select = "countChildrenByParentId", fetchType = FetchType.LAZY)),
+
+            // Lazy load the ROWS (List) - recursive
+            @Result(property = "childObjects", column = "id",
+                    many = @Many(select = "findChildrenByParentId", fetchType = FetchType.LAZY))
+    })
+    List<PossibleObject> findChildrenByParentId(int id);
 
     @Insert("INSERT INTO possible_objects (parent_id, identifier, type, version_number, bin_identifier) " +
             "VALUES (#{parentId}, #{identifier}, #{type}, #{versionNumber}, #{binIdentifier})")
