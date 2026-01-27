@@ -24,6 +24,31 @@
 <div th:if="${possibleObject == null}">
     <p>No PossibleObject found for the given ID.</p>
 </div>
+<div th:if="${#arrays.length(possibleObject.objectFiles) > 0}">
+    <h2>Object Files</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>File Name</th>
+            <th>Function</th>
+            <th>Format</th>
+            <th>Size</th>
+            <th>Checksum</th>
+            <th>Last Fixity Check</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="file : ${possibleObject.objectFiles}">
+            <td th:text="${file.identifier}"></td>
+            <td th:text="${file.fileFunction}"></td>
+            <td th:text="${file.fileFormat}"></td>
+            <td th:text="${file.size}"></td>
+            <td th:text="${file.digest}"></td>
+            <td th:text="${file.lastFixityCheck}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 <div th:if="${possibleObject.childCount > 0}">
     <h2>Child Possible Objects</h2>
     <table>

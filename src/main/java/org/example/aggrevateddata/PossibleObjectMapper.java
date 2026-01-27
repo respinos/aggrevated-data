@@ -22,8 +22,8 @@ public interface PossibleObjectMapper {
             @Result(property = "childObjects", column = "id",
                     many = @Many(select = "findChildrenByParentId", fetchType = FetchType.LAZY)),
 
-            @Result(property = "objectFiles", column = "possible_objects_key",
-                    many = @Many(select = "com.example.aggregavateddata.ObjectFileMapper.findByPossibleObjectsKey"))
+            @Result(property = "objectFiles", column = "id",
+                    many = @Many(select = "org.example.aggrevateddata.ObjectFileMapper.findByPossibleObjectsKey", fetchType = FetchType.LAZY))
     })
     PossibleObject findByIdWithObjectFiles(Long id);
 

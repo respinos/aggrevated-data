@@ -29,6 +29,13 @@ public class PossibleObjectController {
 //        if (possibleObject == null) {
 //            return "redirect:/console/objects/";
 //        }
+
+        var objectFiles = possibleObject.getObjectFiles();
+        if ( objectFiles != null) {
+            System.err.println("?? " + possibleObject.getObjectFiles().size());
+        } else {
+            System.err.println("!! objectFiles IS NULL");
+        }
         model.addAttribute("possibleObject", possibleObject);
         return "possible_object";
     }

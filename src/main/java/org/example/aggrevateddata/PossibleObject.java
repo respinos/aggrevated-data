@@ -18,6 +18,8 @@ public class PossibleObject {
     // Triggered by getChildObjects()
     private List<PossibleObject> childObjects;
 
+    private List<ObjectFile> objectFiles;
+
     public PossibleObject() {}
 
     public PossibleObject(Integer id, Integer parentId, String identifier, String type, Integer versionNumber, String binIdentifier) {
@@ -55,6 +57,9 @@ public class PossibleObject {
 
     public List<PossibleObject> getChildObjects() { return childObjects; }
     public void setChildObjects(List<PossibleObject> childObjects) { this.childObjects = childObjects; }
+
+    public List<ObjectFile> getObjectFiles() { return objectFiles; }
+    public void setObjectFiles(List<ObjectFile> objectFiles) { this.objectFiles = objectFiles; }
 
     public Long totalSize() {
         var totalSize = size;

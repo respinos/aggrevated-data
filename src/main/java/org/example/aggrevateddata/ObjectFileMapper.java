@@ -13,8 +13,8 @@ public interface ObjectFileMapper {
     @Select("SELECT * FROM object_files")
     List<ObjectFile> findAll();
 
-    @Select("SELECT * FROM object_files WHERE possible_objects_key = #{possibleObjectsKey} ORDER BY possible_objects_index")
-    List<ObjectFile> findByPossibleObjectsKey(Integer possibleObjectsKey);
+    @Select("SELECT * FROM object_files WHERE possible_objects_key = #{id} ORDER BY possible_objects_index")
+    List<ObjectFile> findByPossibleObjectsKey(Integer id);
 
     @Insert("INSERT INTO object_files (identifier, file_format, file_function, size, digest, version_number, last_fixity_check, possible_objects_key, possible_objects_index) " +
             "VALUES (#{identifier}, #{fileFormat}, #{fileFunction}, #{size}, #{digest}, #{versionNumber}, #{lastFixityCheck}, #{possibleObjectsKey}, #{possibleObjectsIndex})")
