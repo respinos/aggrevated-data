@@ -10,10 +10,10 @@ public class PossibleObject {
     private String type;
     private Integer versionNumber = 1;
     private String binIdentifier;
-    private Long size = 0L;
+    private Integer size = 0;
 
     // Triggered by getChildCount()
-    private Long childCount = 0L;
+    private Integer childCount = 0;
 
     // Triggered by getChildObjects()
     private List<PossibleObject> childObjects;
@@ -49,11 +49,11 @@ public class PossibleObject {
     public String getBinIdentifier() { return binIdentifier; }
     public void setBinIdentifier(String binIdentifier) { this.binIdentifier = binIdentifier; }
 
-    public Long getSize() { return size; }
-    public void setSize(Long size) { this.size = size; }
+    public Integer getSize() { return size; }
+    public void setSize(Integer size) { this.size = size; }
 
-    public Long getChildCount() { return childCount; }
-    public void setChildCount(Long childCount) { this.childCount = childCount; }
+    public Integer getChildCount() { return childCount; }
+    public void setChildCount(Integer childCount) { this.childCount = childCount; }
 
     public List<PossibleObject> getChildObjects() { return childObjects; }
     public void setChildObjects(List<PossibleObject> childObjects) { this.childObjects = childObjects; }
@@ -61,8 +61,8 @@ public class PossibleObject {
     public List<ObjectFile> getObjectFiles() { return objectFiles; }
     public void setObjectFiles(List<ObjectFile> objectFiles) { this.objectFiles = objectFiles; }
 
-    public Long totalSize() {
-        var totalSize = size;
+    public Integer totalSize() {
+        Integer totalSize = size;
         if (childObjects != null) {
             for (PossibleObject child : childObjects) {
                 totalSize += child.totalSize();

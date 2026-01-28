@@ -80,7 +80,7 @@ class PostgreSQLViewTest extends AbstractIntegrationTest {
         assertNotNull(obj.getId(), "ID should be generated");
 
         // Verify we can retrieve it
-        PossibleObject retrieved = possibleObjectMapper.findById(obj.getId().longValue());
+        PossibleObject retrieved = possibleObjectMapper.findById(obj.getId());
         assertNotNull(retrieved);
         assertEquals("mapper-test", retrieved.getIdentifier());
         assertEquals("mapper-bin", retrieved.getBinIdentifier(), "binIdentifier should be mapped from bin_identifier column");

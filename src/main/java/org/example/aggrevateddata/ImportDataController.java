@@ -1,5 +1,8 @@
 package org.example.aggrevateddata;
 
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -159,4 +160,62 @@ public class ImportDataController {
         model.addAttribute("message", "Message received, La Jolla.");
         return "import";
     }
+
+    @GetMapping("/update")
+    public String updateData(@RequestParam Map<String, String> params, Model model) throws IOException {
+        Random random = new Random();
+        var changelog = new ArrayList<String>();
+        var iterationCount = Integer.parseInt(params.getOrDefault("n", "5"));
+        var sampleSize = Integer.parseInt(params.getOrDefault("s", "10"));
+        var rootObjectsIds = possibleObjectMapper.findAllRootIds();
+        System.out.printf("-- incrementing %d over %d iterations\n", rootObjectsIds.size(), iterationCount);
+        for (int i = 0; i < iterationCount; i++) {
+            Collections.shuffle(rootObjectsIds, random);
+            List<Map<String,Integer>> sample = rootObjectsIds.stream().limit(sampleSize).collect(Collectors.toList());
+            for (var rootId : sample) {
+                incrementVersionRecursive(rootId, null, changelog, 0);
+            }
+        }
+
+        model.addAttribute("changelog", changelog);
+        return "update";
+    }
+
+    private void incrementVersionRecursive(Map<String,Integer> objId, Integer parentId, List<String> changelog, Integer tab) {
+        var integerId = objId.get("id");
+        var obj = possibleObjectMapper.findByIdWithObjectFiles(integerId);
+        if ( obj.getObjectFiles() == null ) {
+            System.err.println("!! objectFiles IS NULL " + obj.getId());
+        }
+        incrementVersionRecursive(obj, parentId, changelog, 0);
+    }
+
+    private void incrementVersionRecursive(PossibleObject obj, Integer parentId, List<String> changelog, Integer tab) {
+        var incrementedObj = new PossibleObject(null, parentId, obj.getIdentifier(), obj.getType(), obj.getVersionNumber() + 1, obj.getBinIdentifier());
+        possibleObjectMapper.insert(incrementedObj);
+        changelog.add("::".repeat(tab + 1) + " " + obj.getId() + " -> " + incrementedObj.getId());
+
+        for(var file : obj.getObjectFiles()) {
+            var incrementedFile = new ObjectFile(
+                    null,
+                    file.getIdentifier(),
+                    file.getFileFormat(),
+                    file.getFileFunction(),
+                    file.getSize(),
+                    file.getDigest(),
+                    incrementedObj.getVersionNumber(),
+                    file.getLastFixityCheck(),
+                    incrementedObj.getId(),
+                    file.getPossibleObjectIndex()
+            );
+            objectFileMapper.insert(incrementedFile);
+            changelog.add("----".repeat(tab + 1) + " " + incrementedObj.getId() + " / " + file.getId() + " -> " + incrementedFile.getId());
+
+        }
+
+        for(var child : obj.getChildObjects()) {
+            incrementVersionRecursive(child, incrementedObj.getId(), changelog, tab + 1);
+        }
+    }
+
 }

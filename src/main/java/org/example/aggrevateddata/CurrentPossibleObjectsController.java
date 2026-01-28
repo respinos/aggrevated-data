@@ -14,9 +14,9 @@ import java.util.stream.StreamSupport;
 class Page {
     private final int page;
     private final int size;
-    private final Long totalObjects;
+    private final Integer totalObjects;
 
-    public Page(int page, int size, Long totalObjects) {
+    public Page(int page, int size, Integer totalObjects) {
         this.page = page;
         this.size = size;
         this.totalObjects = totalObjects;
@@ -24,7 +24,7 @@ class Page {
 
     public int getPage() { return page; }
     public int getSize() { return size; }
-    public Long getTotalObjects() { return totalObjects; }
+    public Integer getTotalObjects() { return totalObjects; }
 
     public boolean hasNext() { return page * size < totalObjects; }
     public boolean hasPrevious() { return page > 0; }
@@ -47,7 +47,7 @@ public class CurrentPossibleObjectsController {
                                              @RequestParam(defaultValue = "0") int page,
                                              @RequestParam(defaultValue = "20") int size) {
 
-        Long countCurrentRoots = possibleObjectMapper.countCurrentRoots();
+        Integer countCurrentRoots = possibleObjectMapper.countCurrentRoots();
 
         var pageObj = new Page(page, size, countCurrentRoots);
 

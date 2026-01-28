@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Import</title>
+    <style>
+        table, th, td { border: 1px solid black; border-collapse: collapse; }
+        th, td { padding: 4px 8px; }
+        nav { margin-top: 1em; }
+
+        li > span { font-family: monospace; }
+    </style>
+</head>
+<body>
+<h1>Update</h1>
+<ul>
+    <li th:each="line : ${changelog}">
+        <span th:text="${line}"></span>
+    </li>
+</ul>
+</body>
+</html>

@@ -10,9 +10,9 @@ import java.util.Map;
 public interface PossibleObjectMapper {
 
     @Select("SELECT possible_objects.* FROM possible_objects WHERE id = #{id}")
-    PossibleObject findById(Long id);
+    PossibleObject findById(Integer id);
 
-    @Select("SELECT * FROM possible_objects WHERE id = #{id}")
+    @Select("SELECT possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = possible_objects.id ) AS size FROM possible_objects WHERE id = #{id}")
     @Results({
             @Result(property = "id", column = "id", id = true),
             // Lazy load the SIZE (Count)
@@ -26,7 +26,23 @@ public interface PossibleObjectMapper {
             @Result(property = "objectFiles", column = "id",
                     many = @Many(select = "org.example.aggrevateddata.ObjectFileMapper.findByPossibleObjectsKey", fetchType = FetchType.LAZY))
     })
-    PossibleObject findByIdWithObjectFiles(Long id);
+    PossibleObject findByIdWithObjectFiles(Integer id);
+
+    @Select("SELECT * FROM possible_objects WHERE identifier = #{identifier} ORDER BY version_number ASC")
+    @Results({
+            @Result(property = "id", column = "id", id = true),
+            // Lazy load the SIZE (Count)
+            @Result(property = "childCount", column = "id",
+                    one = @One(select = "countChildrenByParentId", fetchType = FetchType.LAZY)),
+
+            // Lazy load the ROWS (List)
+            @Result(property = "childObjects", column = "id",
+                    many = @Many(select = "findChildrenByParentId", fetchType = FetchType.LAZY)),
+
+            @Result(property = "objectFiles", column = "id",
+                    many = @Many(select = "org.example.aggrevateddata.ObjectFileMapper.findByPossibleObjectsKey", fetchType = FetchType.LAZY))
+    })
+    List<PossibleObject> findVersionsByIdentifier(String identifier);
 
     @Select("SELECT * FROM current_possible_objects WHERE identifier = #{identifier}")
     @Results({
@@ -47,6 +63,9 @@ public interface PossibleObjectMapper {
     @Select("SELECT current_possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = current_possible_objects.id ) AS size FROM current_possible_objects LIMIT #{limit} OFFSET #{offset}")
     List<PossibleObject> findAll(Integer limit, Integer offset);
 
+    @Select("SELECT id FROM current_possible_objects WHERE parent_id IS NULL")
+    List<Map<String, Integer>> findAllRootIds();
+
     @Select("SELECT current_possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = current_possible_objects.id ) AS size FROM current_possible_objects WHERE parent_id IS NULL ORDER BY id LIMIT #{limit} OFFSET #{offset}")
     @Results({
             @Result(property = "id", column = "id", id = true),
@@ -61,10 +80,10 @@ public interface PossibleObjectMapper {
     List<PossibleObject> findAllCurrentRoots(Integer limit, Integer offset);
 
     @Select("SELECT COUNT(id) FROM current_possible_objects")
-    Long countCurrentRoots();
+    Integer countCurrentRoots();
 
     @Select("SELECT COUNT(possible_objects.id) FROM possible_objects WHERE parent_id = #{id}")
-    Long countChildrenByParentId(int id);
+    Integer countChildrenByParentId(int id);
 
     @Select("SELECT possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = possible_objects.id ) AS size FROM possible_objects WHERE parent_id = #{id} ORDER BY id")
     @Results({
@@ -75,7 +94,10 @@ public interface PossibleObjectMapper {
 
             // Lazy load the ROWS (List) - recursive
             @Result(property = "childObjects", column = "id",
-                    many = @Many(select = "findChildrenByParentId", fetchType = FetchType.LAZY))
+                    many = @Many(select = "findChildrenByParentId", fetchType = FetchType.LAZY)),
+
+            @Result(property = "objectFiles", column = "id",
+                    many = @Many(select = "org.example.aggrevateddata.ObjectFileMapper.findByPossibleObjectsKey", fetchType = FetchType.LAZY))
     })
     List<PossibleObject> findChildrenByParentId(int id);
 
@@ -89,11 +111,12 @@ public interface PossibleObjectMapper {
     int update(PossibleObject possibleObject);
 
     @Delete("DELETE FROM possible_objects WHERE id = #{id}")
-    int delete(Long id);
+    int delete(Integer id);
 
 
     // debug queries because pg_dump will set search_path to empty and
-    // the application really doesn't like that
+    // if you load that as data.sql the application **really** doesn't
+    // like that!
     @Select("SELECT current_database() AS current_database, current_user, current_schema() AS current_schema")
     Map<String, Object> debugDb();
 

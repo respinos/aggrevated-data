@@ -19,10 +19,9 @@ public class PossibleObjectController {
         this.possibleObjectMapper = possibleObjectMapper;
     }
 
-    // TODO - add version parameter
     @GetMapping("/console/objects/{id}/")
     public String viewPossibleObject(Model model,
-                                     @PathVariable Long id) {
+                                     @PathVariable Integer id) {
 
 
         var possibleObject = possibleObjectMapper.findByIdWithObjectFiles(id);
@@ -40,5 +39,17 @@ public class PossibleObjectController {
         return "possible_object";
     }
 
+    @GetMapping("/console/objects/{id}/versions/")
+    public String viewPossibleObjectVersions(Model model,
+                                     @PathVariable Integer id) {
+
+        var possibleObject = possibleObjectMapper.findByIdWithObjectFiles(id);
+        var possibleObjectVersions = possibleObjectMapper.findVersionsByIdentifier(possibleObject.getIdentifier());
+        model.addAttribute("possibleObject", possibleObject);
+        model.addAttribute("possibleObjectVersions", possibleObjectVersions);
+        return "possible_object_versions";
 
     }
+
+
+}

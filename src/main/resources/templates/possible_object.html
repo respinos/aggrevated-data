@@ -16,7 +16,13 @@
         <tr><th>Parent ID</th><td th:text="${possibleObject.parentId}"></td></tr>
         <tr><th>Identifier</th><td th:text="${possibleObject.identifier}"></td></tr>
         <tr><th>Type</th><td th:text="${possibleObject.type}"></td></tr>
-        <tr><th>Version Number</th><td th:text="${possibleObject.versionNumber}"></td></tr>
+        <tr>
+            <th>Version Number</th>
+            <td th:if="${possibleObject.versionNumber == 1}" th:text="${possibleObject.versionNumber}"></td>
+            <td th:if="${possibleObject.versionNumber > 1}">
+                <a th:href="@{/console/objects/{id}/versions/(id=${possibleObject.id})}" th:text="${possibleObject.versionNumber}"></a>
+            </td>
+        </tr>
         <tr><th>Bin Identifier</th><td th:text="${possibleObject.binIdentifier}"></td></tr>
         <tr><th>Size</th><td th:text="${possibleObject.size}"></td></tr>
     </table>
