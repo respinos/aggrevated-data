@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.mapping.FetchType;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PossibleObjectMapper {
@@ -46,7 +47,7 @@ public interface PossibleObjectMapper {
     @Select("SELECT current_possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = current_possible_objects.id ) AS size FROM current_possible_objects LIMIT #{limit} OFFSET #{offset}")
     List<PossibleObject> findAll(Integer limit, Integer offset);
 
-    @Select("SELECT current_possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = current_possible_objects.id ) AS size FROM current_possible_objects WHERE parent_id IS NULL LIMIT #{limit} OFFSET #{offset}")
+    @Select("SELECT current_possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = current_possible_objects.id ) AS size FROM current_possible_objects WHERE parent_id IS NULL ORDER BY id LIMIT #{limit} OFFSET #{offset}")
     @Results({
             @Result(property = "id", column = "id", id = true),
             // Lazy load the SIZE (Count)
@@ -65,7 +66,7 @@ public interface PossibleObjectMapper {
     @Select("SELECT COUNT(possible_objects.id) FROM possible_objects WHERE parent_id = #{id}")
     Long countChildrenByParentId(int id);
 
-    @Select("SELECT possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = possible_objects.id ) AS size FROM possible_objects WHERE parent_id = #{id}")
+    @Select("SELECT possible_objects.*, ( SELECT SUM(size) FROM object_files o WHERE o.possible_objects_key = possible_objects.id ) AS size FROM possible_objects WHERE parent_id = #{id} ORDER BY id")
     @Results({
             @Result(property = "id", column = "id", id = true),
             // Lazy load the SIZE (Count) - recursive
@@ -89,4 +90,16 @@ public interface PossibleObjectMapper {
 
     @Delete("DELETE FROM possible_objects WHERE id = #{id}")
     int delete(Long id);
+
+
+    // debug queries because pg_dump will set search_path to empty and
+    // the application really doesn't like that
+    @Select("SELECT current_database() AS current_database, current_user, current_schema() AS current_schema")
+    Map<String, Object> debugDb();
+
+    @Select("SELECT * FROM public.object_files LIMIT 1")
+    Map<String, Object> testExplicitSchema();
+
+    @Select("SHOW search_path")
+    Map<String, Object> debugSearchPath();
 }

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Debug</title>
+    <style>
+        table, th, td { border: 1px solid black; border-collapse: collapse; }
+        th, td { padding: 4px 8px; }
+        nav { margin-top: 1em; }
+    </style>
+</head>
+<body>
+<dl>
+    <dt>current_database</dt>
+    <dd th:text="${debugInfo.current_database}"></dd>
+    <dt>current_user</dt>
+    <dd th:text="${debugInfo.current_user}"></dd>
+    <dt>current_schema</dt>
+    <dd th:text="${debugInfo.current_schema}"></dd>
+</dl>
+</body>
+</html>

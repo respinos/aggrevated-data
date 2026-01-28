@@ -49,3 +49,6 @@ CREATE TABLE object_files (
 CREATE INDEX ix_catalog_object_file_intellectual_object_id ON object_files (possible_objects_key);
 CREATE INDEX ix_catalog_object_file_file_function ON object_files (file_function);
 CREATE INDEX ix_catalog_object_file_file_format ON object_files (file_format);
+
+ALTER ROLE myuser SET search_path TO public;
+

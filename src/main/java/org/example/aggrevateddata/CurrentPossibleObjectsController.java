@@ -51,10 +51,24 @@ public class CurrentPossibleObjectsController {
 
         var pageObj = new Page(page, size, countCurrentRoots);
 
-        List<PossibleObject> rootObjects = new ArrayList<>(possibleObjectMapper.findAllCurrentRoots(size, page));
+        List<PossibleObject> rootObjects = new ArrayList<>(possibleObjectMapper.findAllCurrentRoots(size, page * size));
         model.addAttribute("rootObjects", rootObjects);
         model.addAttribute("page", pageObj);
         return "current_possible_objects";
+    }
+
+    @GetMapping("/debug")
+    public String debug(Model model) {
+        var debugInfo = possibleObjectMapper.debugDb();
+        var explicitSchemaTest = possibleObjectMapper.testExplicitSchema();
+        System.err.println(explicitSchemaTest);
+
+        var searchPath = possibleObjectMapper.debugSearchPath();
+        System.err.println("SEARCH PATH: " + searchPath);
+
+        model.addAttribute("debugInfo", debugInfo);
+        System.err.println(debugInfo);
+        return "debug";
     }
 
 }

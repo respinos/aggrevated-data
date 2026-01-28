@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CurrentPossibleObjectsTests extends AbstractIntegrationTest {
@@ -33,6 +35,31 @@ public class CurrentPossibleObjectsTests extends AbstractIntegrationTest {
         );
         possibleObjectMapper.insert(possibleObject);
 
+        String testDigestHex = "BCBCBCBC";
+        byte[] digest = null;
+        if (testDigestHex != null && !testDigestHex.isBlank()) {
+            int len = testDigestHex.length();
+            digest = new byte[len / 2];
+            for (int i = 0; i < len; i += 2) {
+                digest[i / 2] = (byte) ((Character.digit(testDigestHex.charAt(i), 16) << 4)
+                        + Character.digit(testDigestHex.charAt(i+1), 16));
+            }
+        }
+
+        var objectFile = new ObjectFile(
+                null,
+                "file1.txt",
+                "text/plain",
+                "function:test",
+                1024,
+                digest,
+                possibleObject.getVersionNumber(),
+                LocalDateTime.now(),
+                possibleObject.getId(),
+                0
+        );
+        objectFileMapper.insert(objectFile);
+
         var nextPossibleObject = new PossibleObject(
                 null,
                 null,
@@ -42,6 +69,32 @@ public class CurrentPossibleObjectsTests extends AbstractIntegrationTest {
                 "bucket/1"
         );
         possibleObjectMapper.insert(nextPossibleObject);
+        var nextObjectFile1 = new ObjectFile(
+                null,
+                "file1.txt",
+                "text/plain",
+                "function:test",
+                1024,
+                digest,
+                nextPossibleObject.getVersionNumber(),
+                LocalDateTime.now(),
+                nextPossibleObject.getId(),
+                0
+        );
+        objectFileMapper.insert(nextObjectFile1);
+        var nextObjectFile2 = new ObjectFile(
+                null,
+                "file2.txt",
+                "text/plain",
+                "function:test",
+                1024,
+                digest,
+                nextPossibleObject.getVersionNumber(),
+                LocalDateTime.now(),
+                nextPossibleObject.getId(),
+                1
+        );
+        objectFileMapper.insert(nextObjectFile2);
     }
 
     @Test
@@ -58,6 +111,13 @@ public class CurrentPossibleObjectsTests extends AbstractIntegrationTest {
         var possibleObject = possibleObjectMapper.findCurrentByIdentifier("root/1");
         assertThat(possibleObject).isNotNull();
         assertThat(possibleObject.getVersionNumber()).isEqualTo(2);
+    }
+
+    @Test
+    public void testCurrentObjectFiles() {
+        var possibleObject = possibleObjectMapper.findCurrentByIdentifier("root/1");
+        var objectFiles = possibleObject.getObjectFiles();
+        assertThat(objectFiles.size()).isEqualTo(2);
     }
 
 }
